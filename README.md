@@ -73,4 +73,3 @@ Privacy-light commercial events via `@vercel/analytics`: `selector_started`, `se
 
 - Central air is intentionally excluded from the load catalog.
 - No affiliate network or custom domain in this version.
-- Internal campaign id: MYR-RA-001 (Myrmidon Buy Once vertical).
