@@ -1,0 +1,40 @@
+[
+  {
+    "id": "example-dual-fuel-5000",
+    "brand": "Example",
+    "model": "DF-5000",
+    "running_watts_gas": 5000,
+    "starting_watts_gas": 6250,
+    "running_watts_propane": 4500,
+    "starting_watts_propane": 5600,
+    "fuel": ["gasoline", "propane"],
+    "inverter": true,
+    "voltage": [120, 240],
+    "outlets": ["5-20R", "L14-30R"],
+    "noise_db": 64,
+    "weight_lb": 125,
+    "runtime_50_load_hours": 10.5,
+    "price": 899,
+    "purchase_url": "https://example.com/df-5000",
+    "source_url": "https://example.com/df-5000/specs"
+  },
+  {
+    "id": "example-gas-3500",
+    "brand": "Example",
+    "model": "G-3500",
+    "running_watts_gas": 3500,
+    "starting_watts_gas": 4000,
+    "running_watts_propane": null,
+    "starting_watts_propane": null,
+    "fuel": ["gasoline"],
+    "inverter": false,
+    "voltage": [120],
+    "outlets": ["5-20R", "L5-30R"],
+    "noise_db": 72,
+    "weight_lb": 105,
+    "runtime_50_load_hours": 8,
+    "price": 549,
+    "purchase_url": "https://example.com/g-3500",
+    "source_url": "https://example.com/g-3500/specs"
+  }
+]

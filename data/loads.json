@@ -1,0 +1,16 @@
+[
+  {
+    "id": "refrigerator",
+    "name": "Refrigerator",
+    "running_watts": 700,
+    "starting_watts": 2200,
+    "allow_quantity": true
+  },
+  {
+    "id": "internet_router",
+    "name": "Internet/router",
+    "running_watts": 20,
+    "starting_watts": 20,
+    "allow_quantity": true
+  }
+]
