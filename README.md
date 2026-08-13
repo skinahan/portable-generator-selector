@@ -1,34 +1,76 @@
 # Portable Generator Selector
 
-**MYR-RA-001** — Buy Once vertical (Sprint 0).
-
 > Tell us what you need to keep running during an outage. We'll find the generators that actually fit.
 
 **Live:** https://portable-generator-selector.vercel.app/
 
-Client-side React + TypeScript + Vite app. Deterministic sizing and recommendations; no backend, auth, or LLM in v0.
+A client-side tool that sizes a portable generator from household loads, then recommends units that meet hard capacity and connection constraints. It answers *what size and type fit*, not which brand is vaguely “best.”
 
-## Scripts
+## How it works
+
+1. Select appliances (and quantities where allowed).
+2. Choose fuel preference, connection style, up to two priorities, and a soft budget band.
+3. The app computes running and starting wattage with a 20% margin (one motor starts at a time).
+4. It filters the catalog on capacity, dual-fuel when required, and outlet/voltage fit, then returns **Best Fit**, **Best Value**, and **Upgrade** when distinct candidates exist.
+
+Everything runs in the browser: React + TypeScript + Vite. No backend, auth, or LLM.
+
+## Safety
+
+Portable generators produce carbon monoxide. Operate them outdoors only, well away from openings, and never backfeed a home through a household receptacle. Transfer equipment is required for home wiring. See the in-app notice and [U.S. CPSC guidance](https://www.cpsc.gov/Newsroom/News-Releases/2026/CPSC-Warns-of-Generator-Carbon-Monoxide-and-Fire-Hazards-Ahead-of-Hurricane-Season).
+
+Recommendations use published specs and estimated loads — verify appliance starting requirements and manufacturer data before purchase.
+
+## Catalog
+
+| Asset | Count | Notes |
+| --- | --- | --- |
+| Loads | 10 | Fridge, freezer, lights, router, TV, furnace blower, sump/well pumps, window AC, microwave |
+| Generators | 12 | Champion, Westinghouse, Honda — manufacturer-sourced watts/outlets |
+
+Provenance and audit dates:
+
+- [`data/LOADS_PROVENANCE.md`](data/LOADS_PROVENANCE.md)
+- [`data/GENERATORS_PROVENANCE.md`](data/GENERATORS_PROVENANCE.md)
+- [`docs/README.md`](docs/README.md) — engine and analytics quick reference
+
+Prices are approximate ballparks for ranking only.
+
+## Develop
+
+```bash
+npm install
+npm run dev
+```
 
 | Command | Purpose |
 | --- | --- |
 | `npm run dev` | Local development server |
 | `npm run build` | Typecheck + production build |
 | `npm run preview` | Serve the production build |
-| `npm test` | Run Vitest |
+| `npm test` | Vitest (sizing, recommend, UI) |
+| `npm run lint` | oxlint |
 
 ## Layout
 
 ```text
-data/                 Load + generator JSON catalog
-src/types/            Shared TypeScript types
-src/engine/           Sizing + recommendation
+data/                 Load + generator JSON + provenance
+src/engine/           Deterministic sizing + recommendation
 src/components/       Questionnaire + results UI
-src/lib/              Answer mapping, analytics, purchase URL seam
+src/lib/              Answers, purchase URL seam, analytics events
+src/types/            Shared TypeScript contracts
 ```
 
-## Status
+## Deploy
 
-Sprint 0 published: public selector with CPSC-aligned safety copy, spot-audited catalog rows, and outbound-click instrumentation (`@vercel/analytics` events).
+Production host is **Vercel** only: https://portable-generator-selector.vercel.app/
 
-Hosted on **Vercel**. GitHub Pages remains a fallback at https://skinahan.github.io/portable-generator-selector/. Custom domain deferred.
+Configured via `vercel.json` (Vite / `dist`). Do not re-enable GitHub Pages — analytics and the canonical public URL live on Vercel.
+
+Privacy-light commercial events via `@vercel/analytics`: `selector_started`, `selector_completed`, `recommendation_clicked` (`product_id`, `recommendation_label`). No questionnaire payloads.
+
+## Scope notes
+
+- Central air is intentionally excluded from the load catalog.
+- No affiliate network or custom domain in this version.
+- Internal campaign id: MYR-RA-001 (Myrmidon Buy Once vertical).
