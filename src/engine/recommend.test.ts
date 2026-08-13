@@ -339,6 +339,37 @@ describe('recommendGenerators', () => {
     }
 
     const bestFit = result.recommendations.find((r) => r.category === 'best-fit')
+    const bestValue = result.recommendations.find(
+      (r) => r.category === 'best-value',
+    )
     expect(bestFit?.generator.id).toBe('champion-201505')
+    // Best Value is cheapest qualifying — same unit as Best Fit, not a pricier filler.
+    expect(bestValue?.generator.id).toBe('champion-201505')
+    expect(bestValue?.generator.approximatePriceUsd).toBe(799)
+  })
+
+  it('Best Value may equal Best Fit when the closest unit is also cheapest', () => {
+    const fixture = [
+      gen({
+        id: 'winner',
+        model: 'Winner',
+        approximatePriceUsd: 700,
+        gasoline: { runningWatts: 5000, startingWatts: 6250 },
+      }),
+      gen({
+        id: 'pricier-larger',
+        model: 'Pricier Larger',
+        approximatePriceUsd: 1100,
+        gasoline: { runningWatts: 6000, startingWatts: 7500 },
+      }),
+    ]
+    const result = recommendGenerators(baseSizing(), prefs(), fixture)
+    expect(
+      result.recommendations.find((r) => r.category === 'best-fit')?.generator.id,
+    ).toBe('winner')
+    expect(
+      result.recommendations.find((r) => r.category === 'best-value')
+        ?.generator.id,
+    ).toBe('winner')
   })
 })

@@ -1,20 +1,24 @@
 :root {
-  --color-bg: #f6f3ee;
-  --color-bg-accent: #e8e2d8;
+  --color-bg: #f7f7f5;
   --color-surface: #ffffff;
-  --color-ink: #1a1f1c;
-  --color-ink-muted: #5a635c;
-  --color-accent: #1f6b4a;
-  --color-accent-soft: #d7ebe0;
-  --color-border: #d4cdc2;
-  --font-display: "Fraunces", "Iowan Old Style", "Palatino Linotype", Palatino, serif;
+  --color-ink: #1c1c1a;
+  --color-ink-muted: #5c5c56;
+  --color-accent: #0b5f4b;
+  --color-accent-soft: #e3f0eb;
+  --color-border: #d8d8d2;
+  --color-border-strong: #0b5f4b;
+  --color-warn-bg: #fff6e8;
+  --color-warn-border: #e0c48a;
+  --font-display: "Fraunces", "Iowan Old Style", "Palatino Linotype", Palatino,
+    serif;
   --font-body: "Source Sans 3", "Segoe UI", sans-serif;
   --space-1: 0.5rem;
   --space-2: 1rem;
   --space-3: 1.5rem;
   --space-4: 2.5rem;
-  --space-5: 4rem;
-  --max-width: 40rem;
+  --space-5: 3.5rem;
+  --max-width: 64rem;
+  --radius: 0.75rem;
 }
 
 *,
@@ -32,9 +36,7 @@ body {
 body {
   font-family: var(--font-body);
   color: var(--color-ink);
-  background:
-    radial-gradient(ellipse 80% 50% at 10% 0%, var(--color-accent-soft), transparent 55%),
-    linear-gradient(180deg, var(--color-bg) 0%, var(--color-bg-accent) 100%);
+  background: var(--color-bg);
   line-height: 1.5;
 }
 
@@ -44,6 +46,7 @@ body {
 
 h1,
 h2,
+h3,
 .brand {
   font-family: var(--font-display);
   font-weight: 600;

@@ -438,11 +438,8 @@ export function recommendGenerators(
   }
 
   const bestFit = [...qualified].sort(compareBestFit)[0]!
-
-  let bestValue: QualifiedCandidate | undefined
-  const valueSorted = [...qualified].sort(compareBestValue)
-  bestValue = valueSorted.find((c) => c.generator.id !== bestFit.generator.id)
-  // If every qualified unit is the same as best fit, omit best-value rather than duplicate
+  // Best Value is the cheapest qualifying unit — may be the same product as Best Fit.
+  const bestValue = [...qualified].sort(compareBestValue)[0]!
 
   const upgradeCap = sizing.recommendedRunningWatts * 1.75
   const upgradePool = qualified.filter(
@@ -455,12 +452,8 @@ export function recommendGenerators(
 
   const recommendations: Recommendation[] = [
     toRecommendation('best-fit', bestFit, sizing, preferences),
+    toRecommendation('best-value', bestValue, sizing, preferences),
   ]
-  if (bestValue) {
-    recommendations.push(
-      toRecommendation('best-value', bestValue, sizing, preferences),
-    )
-  }
   if (upgrade) {
     recommendations.push(
       toRecommendation('upgrade', upgrade, sizing, preferences),
