@@ -5,9 +5,12 @@ export type OutletType = '5-20R' | 'L5-30R' | 'L14-30R' | string
 export interface Load {
   id: string
   name: string
-  running_watts: number
-  starting_watts: number
-  allow_quantity?: boolean
+  runningWatts: number
+  startingWatts: number
+  quantityAllowed?: boolean
+  notes?: string
+  sourceUrl?: string
+  sourceLabel?: string
 }
 
 export interface Generator {
@@ -67,14 +70,6 @@ export interface QuestionnaireAnswers {
   fuel: FuelPreference
   connection: ConnectionPreference
   budget: BudgetBand
-}
-
-export interface LoadRequirement {
-  baseRunningWatts: number
-  largestStartDelta: number
-  startupRequirementWatts: number
-  recommendedMinimumWatts: number
-  safetyMargin: number
 }
 
 export type RecommendationRole = 'best_fit' | 'best_value' | 'upgrade'

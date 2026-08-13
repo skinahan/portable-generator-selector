@@ -1,9 +1,9 @@
 import type {
   Generator,
-  LoadRequirement,
   QuestionnaireAnswers,
   Recommendation,
 } from '../types/catalog'
+import type { SizingResult } from './sizing'
 
 /**
  * Deterministic catalog filter + rank.
@@ -11,7 +11,7 @@ import type {
  * Never relaxes hard constraints to force a result.
  */
 export function recommendGenerators(
-  requirement: LoadRequirement,
+  requirement: SizingResult,
   answers: QuestionnaireAnswers,
   catalog: Generator[],
 ): Recommendation[] {
