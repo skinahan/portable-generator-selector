@@ -1,10 +1,14 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import defaultLoads from '../data/loads.json'
 import defaultGenerators from '../data/generators.json'
 import { ChoiceStep } from './components/ChoiceStep'
 import { LoadStep } from './components/LoadStep'
 import { Progress } from './components/Progress'
 import { Results } from './components/Results'
+import {
+  trackSelectorCompleted,
+  trackSelectorStarted,
+} from './lib/analytics'
 import { recommendGenerators } from './engine/recommend'
 import { sizeLoads, type SizingResult } from './engine/sizing'
 import {
@@ -69,6 +73,8 @@ export default function App({
   const [sizing, setSizing] = useState<SizingResult | null>(null)
   const [recommendation, setRecommendation] =
     useState<RecommendationResult | null>(null)
+  const startedTracked = useRef(false)
+  const completedTracked = useRef(false)
 
   function resetAll() {
     setStep('loads')
@@ -79,6 +85,8 @@ export default function App({
     setBudgetBand(null)
     setSizing(null)
     setRecommendation(null)
+    startedTracked.current = false
+    completedTracked.current = false
   }
 
   function toggleLoad(loadId: string) {
@@ -88,6 +96,10 @@ export default function App({
         delete next[loadId]
       } else {
         next[loadId] = 1
+        if (!startedTracked.current) {
+          startedTracked.current = true
+          trackSelectorStarted()
+        }
       }
       return next
     })
@@ -140,6 +152,14 @@ export default function App({
     }, calculateDelayMs)
     return () => window.clearTimeout(timer)
   }, [step, calculateDelayMs])
+
+  useEffect(() => {
+    if (step !== 'results' || !recommendation) return
+    if (recommendation.qualifiedCount < 1) return
+    if (completedTracked.current) return
+    completedTracked.current = true
+    trackSelectorCompleted()
+  }, [step, recommendation])
 
   return (
     <div className="app-shell">

@@ -1,5 +1,7 @@
+import { trackRecommendationClicked } from '../lib/analytics'
 import { categoryLabel, formatUsd } from '../lib/answers'
 import type { MergedRecommendation } from '../lib/mergeRecommendations'
+import { buildPurchaseUrl } from '../lib/purchase'
 
 type RecommendationCardProps = {
   item: MergedRecommendation
@@ -73,9 +75,15 @@ export function RecommendationCard({ item }: RecommendationCardProps) {
       </div>
       <a
         className="btn btn-primary"
-        href={generator.purchaseUrl}
+        href={buildPurchaseUrl(generator)}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={() =>
+          trackRecommendationClicked({
+            product_id: generator.id,
+            recommendation_label: badges,
+          })
+        }
       >
         Check current price
       </a>

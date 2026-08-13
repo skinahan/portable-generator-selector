@@ -157,6 +157,12 @@ export function Results({
         </>
       )}
 
+      <p className="credibility">
+        Recommendations are based on published generator specifications and
+        estimated appliance loads. Verify appliance starting requirements and
+        manufacturer specifications before purchase.
+      </p>
+
       <SafetyNotice />
     </section>
   )

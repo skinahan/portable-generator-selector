@@ -15,7 +15,7 @@
     "approximatePriceUsd": 429,
     "manufacturerUrl": "https://www.championpowerequipment.com/product/201286-3500w-generator-with-co-shield/",
     "purchaseUrl": "https://www.championpowerequipment.com/product/201286-3500w-generator-with-co-shield/",
-    "auditedAt": "2026-08-12"
+    "auditedAt": "2026-08-13"
   },
   {
     "id": "champion-201267",
@@ -94,13 +94,14 @@
     "inverter": false,
     "voltages": [120, 240],
     "outlets": ["5-20R", "L14-30R"],
+    "weightLb": 170,
     "runtimeHours": 11,
     "runtimeLoadPercent": 50,
     "noiseDb": 74,
     "approximatePriceUsd": 799,
     "manufacturerUrl": "https://www.championpowerequipment.com/product/201505-5500w-dual-fuel-generator-with-co-shield/",
     "purchaseUrl": "https://www.championpowerequipment.com/product/201505-5500w-dual-fuel-generator-with-co-shield/",
-    "auditedAt": "2026-08-12"
+    "auditedAt": "2026-08-13"
   },
   {
     "id": "champion-201463",
@@ -112,13 +113,14 @@
     "inverter": false,
     "voltages": [120, 240],
     "outlets": ["5-20R", "L14-30R"],
+    "weightLb": 171,
     "runtimeHours": 11,
     "runtimeLoadPercent": 50,
     "noiseDb": 74,
     "approximatePriceUsd": 899,
     "manufacturerUrl": "https://www.championpowerequipment.com/product/201463-6250w-dual-fuel-generator-with-co-shield/",
     "purchaseUrl": "https://www.championpowerequipment.com/product/201463-6250w-dual-fuel-generator-with-co-shield/",
-    "auditedAt": "2026-08-12"
+    "auditedAt": "2026-08-13"
   },
   {
     "id": "champion-201281",
@@ -170,7 +172,7 @@
     "approximatePriceUsd": 1199,
     "manufacturerUrl": "https://direct.powerequipment.honda.com/generators/models/EU2200i",
     "purchaseUrl": "https://direct.powerequipment.honda.com/generators/models/EU2200i",
-    "auditedAt": "2026-08-12"
+    "auditedAt": "2026-08-13"
   },
   {
     "id": "champion-201319",
