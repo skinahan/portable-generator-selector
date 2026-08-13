@@ -15,9 +15,8 @@ export default function App() {
         generator should you buy — not which unit is vaguely &ldquo;best.&rdquo;
       </p>
       <p className="status">
-        Sizing engine ready. Catalog: {catalogLoads.length} loads,{' '}
-        {catalogGenerators.length} generator stubs. Generator ranking and
-        questionnaire land in later slices.
+        Recommendation engine ready. Catalog: {catalogLoads.length} loads,{' '}
+        {catalogGenerators.length} generators. Questionnaire UI lands next.
       </p>
     </main>
   )

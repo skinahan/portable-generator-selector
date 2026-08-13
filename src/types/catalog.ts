@@ -1,6 +1,29 @@
 export type FuelType = 'gasoline' | 'propane'
 
-export type OutletType = '5-20R' | 'L5-30R' | 'L14-30R' | string
+export type FuelModeRatings = {
+  runningWatts: number
+  startingWatts: number
+}
+
+export interface Generator {
+  id: string
+  brand: string
+  model: string
+  fuelTypes: FuelType[]
+  gasoline?: FuelModeRatings
+  propane?: FuelModeRatings
+  inverter: boolean
+  voltages: number[]
+  outlets: string[]
+  weightLb?: number
+  runtimeHours?: number
+  runtimeLoadPercent?: number
+  noiseDb?: number
+  approximatePriceUsd: number
+  manufacturerUrl: string
+  purchaseUrl: string
+  auditedAt: string
+}
 
 export interface Load {
   id: string
@@ -13,69 +36,54 @@ export interface Load {
   sourceLabel?: string
 }
 
-export interface Generator {
-  id: string
-  brand: string
-  model: string
-  running_watts_gas: number
-  starting_watts_gas: number
-  running_watts_propane: number | null
-  starting_watts_propane: number | null
-  fuel: FuelType[]
-  inverter: boolean
-  voltage: number[]
-  outlets: OutletType[]
-  noise_db: number
-  weight_lb: number
-  runtime_50_load_hours: number
-  price: number
-  purchase_url: string
-  source_url: string
-}
-
-export type Priority =
-  | 'lowest_price'
+export type PriorityId =
+  | 'lowest-price'
   | 'quiet'
-  | 'fuel_efficiency'
+  | 'fuel-efficiency'
   | 'portability'
-  | 'long_runtime'
-  | 'clean_power'
+  | 'runtime'
+  | 'clean-power'
 
-export type FuelPreference = 'gasoline' | 'dual_fuel' | 'no_preference'
+export type FuelPreferenceId =
+  | 'gasoline-ok'
+  | 'dual-fuel-required'
+  | 'no-preference'
 
-export type ConnectionPreference =
-  | 'extension_cords'
-  | 'rv_30a'
-  | 'inlet_transfer'
+export type ConnectionId =
+  | 'extension-cords'
+  | 'rv-30a'
+  | 'generator-inlet'
   | 'unsure'
 
-export type BudgetBand =
-  | 'under_600'
-  | '600_900'
-  | '900_1200'
-  | '1200_1500'
-  | 'flexible'
+export interface GeneratorPreferences {
+  fuelPreference: FuelPreferenceId
+  connection: ConnectionId
+  priorities: PriorityId[]
+  budgetMaxUsd?: number
+}
 
 export interface LoadSelection {
   loadId: string
   quantity: number
-  /** Used when loadId is the custom wattage entry. */
   customRunningWatts?: number
   customStartingWatts?: number
 }
 
-export interface QuestionnaireAnswers {
-  loads: LoadSelection[]
-  priorities: Priority[]
-  fuel: FuelPreference
-  connection: ConnectionPreference
-  budget: BudgetBand
-}
-
-export type RecommendationRole = 'best_fit' | 'best_value' | 'upgrade'
+export type RecommendationCategory = 'best-fit' | 'best-value' | 'upgrade'
 
 export interface Recommendation {
-  role: RecommendationRole
+  category: RecommendationCategory
   generator: Generator
-  whyItFits: string
+  applicableFuel: FuelType
+  runningHeadroomWatts: number
+  startingHeadroomWatts: number
+  meetsBudget: boolean
+  overBudgetByUsd: number
+  reasons: string[]
+}
+
+export interface RecommendationResult {
+  qualifiedCount: number
+  recommendations: Recommendation[]
+  warnings: string[]
 }
