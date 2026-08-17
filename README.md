@@ -4,6 +4,8 @@
 
 **Live:** https://portable-generator-selector.vercel.app/
 
+**Publisher:** [Silver Rook Labs](https://silverrooklabs.com/)
+
 A client-side tool that sizes a portable generator from household loads, then recommends units that meet hard capacity and connection constraints. It answers *what size and type fit*, not which brand is vaguely “best.”
 
 ## How it works

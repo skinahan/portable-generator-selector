@@ -251,6 +251,9 @@ export default function App({
           />
         ) : null}
       </main>
+      <footer className="publisher-attribution">
+        <a href="https://silverrooklabs.com/">A Silver Rook Labs project</a>
+      </footer>
     </div>
   )
 }
