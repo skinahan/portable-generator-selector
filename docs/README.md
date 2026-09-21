@@ -26,6 +26,10 @@
 | --- | --- | --- |
 | `selector_started` | First load selection / continue from loads | — |
 | `selector_completed` | Results with ≥1 recommendation | — |
-| `recommendation_clicked` | Outbound CTA | `product_id`, `recommendation_label` |
+| `recommendation_clicked` | Outbound CTA or alternate retailer link | `product_id`, `recommendation_label`, `retailer` (`amazon` / `home-depot` / `manufacturer`), `tagged` |
 
-Purchase links go through `buildPurchaseUrl()` in `src/lib/purchase.ts` (currently returns `generator.purchaseUrl`).
+Purchase links go through `buildRetailerLinks()` in `src/lib/affiliate.ts`; `buildPurchaseUrl()` in `src/lib/purchase.ts` returns the primary link. Without `VITE_AMAZON_ASSOCIATES_TAG` / `VITE_HOME_DEPOT_LINK_TEMPLATE` the only link is `generator.purchaseUrl`. Optional verified `retailers.amazonAsin` / `retailers.homeDepotUrl` fields on a catalog entry replace the brand + model search fallback; record their source in `data/GENERATORS_PROVENANCE.md`.
+
+## Guide pages
+
+`scripts/build-guides.mjs` runs after `vite build` and writes `dist/guides/**` (bundle comparisons and per-model pages), `dist/sitemap.xml`, and `dist/robots.txt`. It mirrors the sizing rule and affiliate logic above so pages and app never disagree.

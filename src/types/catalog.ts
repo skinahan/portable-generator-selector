@@ -23,6 +23,15 @@ export interface Generator {
   manufacturerUrl: string
   purchaseUrl: string
   auditedAt: string
+  /**
+   * Optional verified retailer identifiers. When absent, retailer links fall
+   * back to a brand + model search on that retailer. Record the source and
+   * audit date in data/GENERATORS_PROVENANCE.md when filling these in.
+   */
+  retailers?: {
+    amazonAsin?: string
+    homeDepotUrl?: string
+  }
 }
 
 export interface Load {

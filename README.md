@@ -38,6 +38,12 @@ Provenance and audit dates:
 
 Prices are approximate ballparks for ranking only.
 
+## Guides and retailer links
+
+`npm run build` also generates static guide pages under `/guides/` (one per household bundle, one per model) plus `sitemap.xml` and `robots.txt`, all derived from the same catalog and sizing rule as the app.
+
+Outbound "Check price" links resolve through `src/lib/affiliate.ts`. With no configuration they point at manufacturer pages exactly as before. When affiliate identifiers are supplied at build time (see [`.env.example`](.env.example)), the primary CTA becomes a tagged retailer link, alternates are listed, and a material-connection disclosure renders above the results and in the footer. Rankings never depend on retailer.
+
 ## Develop
 
 ```bash

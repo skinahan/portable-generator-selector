@@ -1,6 +1,11 @@
 import type { Generator } from '../types/catalog'
+import { affiliateConfigFromEnv, primaryRetailerLink } from './affiliate'
 
-/** Single seam for affiliate/retailer URL swaps later. */
+/**
+ * Primary purchase URL for a generator. Resolves to a tagged retailer link
+ * when affiliate identifiers are configured at build time, otherwise to the
+ * manufacturer page exactly as before.
+ */
 export function buildPurchaseUrl(generator: Generator): string {
-  return generator.purchaseUrl
+  return primaryRetailerLink(generator, affiliateConfigFromEnv()).url
 }

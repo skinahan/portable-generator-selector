@@ -11,6 +11,7 @@ import {
 } from './lib/analytics'
 import { recommendGenerators } from './engine/recommend'
 import { sizeLoads, type SizingResult } from './engine/sizing'
+import { affiliateConfigFromEnv, type AffiliateConfig } from './lib/affiliate'
 import {
   BUDGET_OPTIONS,
   CONNECTION_OPTIONS,
@@ -43,6 +44,8 @@ export type AppProps = {
   generators?: Generator[]
   /** Test seam: skip calculating delay */
   calculateDelayMs?: number
+  /** Test seam: affiliate identifiers; defaults to build-time env */
+  affiliateConfig?: AffiliateConfig
 }
 
 const STEP_NUMBERS: Record<
@@ -60,6 +63,7 @@ export default function App({
   loads = defaultLoads as Load[],
   generators = defaultGenerators as Generator[],
   calculateDelayMs = 500,
+  affiliateConfig = affiliateConfigFromEnv(),
 }: AppProps) {
   const [step, setStep] = useState<StepId>('loads')
   const [selectedLoads, setSelectedLoads] = useState<Record<string, number>>(
@@ -248,10 +252,13 @@ export default function App({
             recommendation={recommendation}
             onChangeSelections={() => setStep('loads')}
             onStartOver={resetAll}
+            affiliateConfig={affiliateConfig}
           />
         ) : null}
       </main>
-      <footer className="publisher-attribution">
+      <footer className="app-footer publisher-attribution">
+        <a href="/guides/">Generator guides &amp; comparisons</a>
+        {' · '}
         <a href="https://silverrooklabs.com/">A Silver Rook Labs project</a>
       </footer>
     </div>
