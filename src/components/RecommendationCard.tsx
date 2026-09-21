@@ -1,10 +1,17 @@
 import { trackRecommendationClicked } from '../lib/analytics'
 import { categoryLabel, formatUsd } from '../lib/answers'
 import type { MergedRecommendation } from '../lib/mergeRecommendations'
-import { buildPurchaseUrl } from '../lib/purchase'
+import {
+  affiliateConfigFromEnv,
+  buildRetailerLinks,
+  type AffiliateConfig,
+  type RetailerLink,
+} from '../lib/affiliate'
 
 type RecommendationCardProps = {
   item: MergedRecommendation
+  /** Test seam; defaults to build-time environment configuration. */
+  affiliateConfig?: AffiliateConfig
 }
 
 function fuelModeWatts(item: MergedRecommendation): {
@@ -21,7 +28,10 @@ function fuelModeWatts(item: MergedRecommendation): {
   }
 }
 
-export function RecommendationCard({ item }: RecommendationCardProps) {
+export function RecommendationCard({
+  item,
+  affiliateConfig = affiliateConfigFromEnv(),
+}: RecommendationCardProps) {
   const { generator } = item
   const watts = fuelModeWatts(item)
   const badges = item.categories.map(categoryLabel).join(' · ')
@@ -34,6 +44,17 @@ export function RecommendationCard({ item }: RecommendationCardProps) {
   if (generator.outlets.includes('L14-30R')) connectionBits.push('L14-30R')
   if (generator.outlets.includes('TT-30R')) connectionBits.push('TT-30R')
   if (generator.outlets.includes('L5-30R')) connectionBits.push('L5-30R')
+
+  const [primary, ...secondary] = buildRetailerLinks(generator, affiliateConfig)
+
+  function handleClick(link: RetailerLink) {
+    trackRecommendationClicked({
+      product_id: generator.id,
+      recommendation_label: badges,
+      retailer: link.retailer,
+      tagged: link.tagged,
+    })
+  }
 
   return (
     <article className="rec-card">
@@ -75,18 +96,35 @@ export function RecommendationCard({ item }: RecommendationCardProps) {
       </div>
       <a
         className="btn btn-primary"
-        href={buildPurchaseUrl(generator)}
+        href={primary.url}
         target="_blank"
-        rel="noopener noreferrer"
-        onClick={() =>
-          trackRecommendationClicked({
-            product_id: generator.id,
-            recommendation_label: badges,
-          })
-        }
+        rel={primary.tagged ? 'noopener noreferrer sponsored' : 'noopener noreferrer'}
+        data-retailer={primary.retailer}
+        onClick={() => handleClick(primary)}
       >
-        Check current price
+        {primary.retailer === 'manufacturer'
+          ? 'Check current price'
+          : `Check price at ${primary.label}`}
       </a>
+      {secondary.length > 0 ? (
+        <p className="rec-card__alt-links">
+          Also at:{' '}
+          {secondary.map((link, index) => (
+            <span key={link.retailer}>
+              {index > 0 ? ' · ' : null}
+              <a
+                href={link.url}
+                target="_blank"
+                rel={link.tagged ? 'noopener noreferrer sponsored' : 'noopener noreferrer'}
+                data-retailer={link.retailer}
+                onClick={() => handleClick(link)}
+              >
+                {link.label}
+              </a>
+            </span>
+          ))}
+        </p>
+      ) : null}
     </article>
   )
 }

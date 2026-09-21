@@ -31,6 +31,14 @@
   color: var(--color-accent);
 }
 
+.app-footer {
+  margin-top: var(--space-5);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-border);
+  color: var(--color-ink-muted);
+  font-size: 0.9rem;
+}
+
 .progress {
   margin: 0;
   color: var(--color-ink-muted);
@@ -311,6 +319,28 @@
   max-width: 46rem;
   color: var(--color-ink-muted);
   font-size: 0.9rem;
+}
+
+.rec-card__alt-links {
+  margin: 0.75rem 0 0;
+  color: var(--color-ink-muted);
+  font-size: 0.9rem;
+}
+
+.disclosure {
+  max-width: 46rem;
+  color: var(--color-ink-muted);
+  font-size: 0.9rem;
+}
+
+.disclosure--inline {
+  margin: 0 0 var(--space-2);
+}
+
+.disclosure--footer {
+  margin: var(--space-3) 0 0;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-border);
 }
 
 .safety {

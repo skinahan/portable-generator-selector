@@ -2,6 +2,8 @@ import { displayWatts } from '../lib/answers'
 import type { RecommendationResult } from '../types/catalog'
 import type { SizingResult } from '../engine/sizing'
 import { mergeRecommendations } from '../lib/mergeRecommendations'
+import { affiliateConfigFromEnv, type AffiliateConfig } from '../lib/affiliate'
+import { AffiliateDisclosure } from './AffiliateDisclosure'
 import { RecommendationCard } from './RecommendationCard'
 import { SafetyNotice } from './SafetyNotice'
 
@@ -10,6 +12,8 @@ type ResultsProps = {
   recommendation: RecommendationResult
   onChangeSelections: () => void
   onStartOver: () => void
+  /** Test seam; defaults to build-time environment configuration. */
+  affiliateConfig?: AffiliateConfig
 }
 
 export function Results({
@@ -17,6 +21,7 @@ export function Results({
   recommendation,
   onChangeSelections,
   onStartOver,
+  affiliateConfig = affiliateConfigFromEnv(),
 }: ResultsProps) {
   const cards = mergeRecommendations(recommendation.recommendations)
   const noMatch = recommendation.qualifiedCount === 0 || cards.length === 0
@@ -139,9 +144,14 @@ export function Results({
           ))}
 
           <h2 className="rec-heading">Generators that fit</h2>
+          <AffiliateDisclosure config={affiliateConfig} variant="inline" />
           <div className="rec-list">
             {cards.map((item) => (
-              <RecommendationCard key={item.generator.id} item={item} />
+              <RecommendationCard
+                key={item.generator.id}
+                item={item}
+                affiliateConfig={affiliateConfig}
+              />
             ))}
           </div>
 
@@ -164,6 +174,7 @@ export function Results({
       </p>
 
       <SafetyNotice />
+      <AffiliateDisclosure config={affiliateConfig} variant="footer" />
     </section>
   )
 }

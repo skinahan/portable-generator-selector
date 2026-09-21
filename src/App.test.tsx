@@ -201,6 +201,72 @@ describe('Questionnaire App', () => {
     expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(1)
   })
 
+  it('renders no disclosure and a manufacturer CTA when affiliate IDs are absent', async () => {
+    render(
+      <App
+        loads={tinyLoads}
+        generators={[gen({ id: 'only-fit', model: 'Only Fit' })]}
+        calculateDelayMs={0}
+        affiliateConfig={{}}
+      />,
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Refrigerator' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Gasoline is fine' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+    fireEvent.click(screen.getByRole('button', { name: "I'm not sure" }))
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Flexible' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Find my generator' }))
+    await flushCalculating()
+
+    const cta = screen.getByRole('link', { name: 'Check current price' })
+    expect(cta).toHaveAttribute('href', 'https://example.com/buy')
+    expect(cta).toHaveAttribute('data-retailer', 'manufacturer')
+    expect(screen.queryByTestId('affiliate-disclosure-inline')).toBeNull()
+    expect(screen.queryByText(/Also at:/i)).toBeNull()
+  })
+
+  it('renders tagged retailer CTA, alternates, and disclosure when configured', async () => {
+    render(
+      <App
+        loads={tinyLoads}
+        generators={[gen({ id: 'only-fit', brand: 'Champion', model: 'Only Fit' })]}
+        calculateDelayMs={0}
+        affiliateConfig={{
+          amazonTag: 'silverrook-20',
+          homeDepotLinkTemplate: 'https://homedepot.sjv.io/c/1/2/8154?u={url}',
+        }}
+      />,
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Refrigerator' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Gasoline is fine' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+    fireEvent.click(screen.getByRole('button', { name: "I'm not sure" }))
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Flexible' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Find my generator' }))
+    await flushCalculating()
+
+    const cta = screen.getByRole('link', { name: 'Check price at Amazon' })
+    expect(cta.getAttribute('href')).toContain('tag=silverrook-20')
+    expect(cta).toHaveAttribute('rel', 'noopener noreferrer sponsored')
+    expect(screen.getByRole('link', { name: 'The Home Depot' }).getAttribute('href')).toContain(
+      'homedepot.sjv.io',
+    )
+    expect(screen.getByRole('link', { name: 'Manufacturer page' })).toHaveAttribute(
+      'href',
+      'https://example.com/buy',
+    )
+    expect(screen.getByTestId('affiliate-disclosure-inline')).toHaveTextContent(
+      /As an Amazon Associate we earn from qualifying purchases/i,
+    )
+    expect(screen.getByTestId('affiliate-disclosure-footer')).toBeTruthy()
+  })
+
   it('no-match result renders recovery actions', async () => {
     const undersized: Generator[] = [
       gen({
