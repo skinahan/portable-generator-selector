@@ -62,9 +62,19 @@ function fits(generator, sizing, fuel = 'gasoline') {
   return mode.runningWatts >= sizing.running && mode.startingWatts >= sizing.starting
 }
 
+function primaryMode(generator) {
+  if (generator.battery) return { fuel: 'battery', mode: generator.battery }
+  if (generator.gasoline) return { fuel: 'gasoline', mode: generator.gasoline }
+  if (generator.propane) return { fuel: 'propane', mode: generator.propane }
+  return null
+}
+
 // ---------- retailer links (mirrors src/lib/affiliate.ts) ----------
 function searchQuery(g) {
-  return `${g.brand} ${g.model} portable generator`
+  const kind = Array.isArray(g.fuelTypes) && g.fuelTypes.includes('battery')
+    ? 'portable power station'
+    : 'portable generator'
+  return `${g.brand} ${g.model} ${kind}`
 }
 function amazonUrl(g) {
   const asin = g.retailers?.amazonAsin
@@ -190,6 +200,18 @@ const SCENARIOS = [
     requireDualFuel: true,
     maxPrice: 1000,
   },
+  {
+    slug: 'indoor-safe-battery-power-stations',
+    title: 'Indoor-safe battery power stations for essentials',
+    intro:
+      'Battery power stations produce no carbon monoxide exhaust, so they are the indoor-safe alternative to a portable generator for fridge, lights, and networking loads. Capacity still limits runtime—verify Wh against your expected hours.',
+    selections: [
+      { loadId: 'refrigerator', quantity: 1 },
+      { loadId: 'lights', quantity: 1 },
+      { loadId: 'router', quantity: 1 },
+    ],
+    requireBattery: true,
+  },
 ]
 
 // ---------- html helpers ----------
@@ -221,7 +243,7 @@ function disclosureHtml() {
 }
 
 function safetyHtml() {
-  return `<aside class="safety" aria-label="Generator safety"><h2>Generator safety</h2><p>Operate portable generators outdoors only, at least 20 feet from homes and buildings, with exhaust directed away from windows, doors, and vents. Never operate one inside a home, garage, basement, crawlspace, shed, or other enclosed area, even with doors or windows open. Never connect a portable generator to a household receptacle to power home wiring; home-wiring connections require appropriate transfer equipment. Follow the manufacturer's instructions.</p><p><a href="${CPSC_URL}" rel="noopener noreferrer" target="_blank">Generator safety guidance — U.S. CPSC</a></p></aside>`
+  return `<aside class="safety" aria-label="Generator safety"><h2>Generator safety</h2><p>Operate portable generators outdoors only, at least 20 feet from homes and buildings, with exhaust directed away from windows, doors, and vents. Never operate one inside a home, garage, basement, crawlspace, shed, or other enclosed area, even with doors or windows open. Never connect a portable generator to a household receptacle to power home wiring; home-wiring connections require appropriate transfer equipment. Follow the manufacturer's instructions.</p><p>For an indoor-safe alternative without carbon monoxide exhaust, see the battery power-station guide. Battery stations still have charge, ventilation, and load limits—follow each manufacturer's instructions.</p><p><a href="${CPSC_URL}" rel="noopener noreferrer" target="_blank">Generator safety guidance — U.S. CPSC</a></p></aside>`
 }
 
 function linksHtml(g) {
@@ -271,18 +293,28 @@ ${disclosureHtml()}
 function generatorBody(g) {
   const gas = g.gasoline
   const lp = g.propane
+  const bat = g.battery
+  const primary = primaryMode(g)
+  const fitFuel = primary?.fuel ?? 'gasoline'
   const rows = SCENARIOS.map((s) => {
     const sizing = sizeBundle(s.selections)
     const ok =
-      fits(g, sizing, 'gasoline') &&
+      fits(g, sizing, fitFuel) &&
       (!s.requireVoltage || g.voltages.includes(s.requireVoltage)) &&
-      (!s.requireOutlet || g.outlets.includes(s.requireOutlet))
+      (!s.requireOutlet || g.outlets.includes(s.requireOutlet)) &&
+      (!s.requireBattery || Boolean(g.battery)) &&
+      (!s.requireDualFuel || (g.gasoline && g.propane))
     return `<tr><td><a href="/guides/${s.slug}/">${esc(s.title)}</a></td><td>${fmt(sizing.running)} W / ${fmt(sizing.starting)} W</td><td>${ok ? 'Yes' : 'No'}</td></tr>`
   }).join('')
 
   const specs = [
     gas ? `<li>Gasoline: ${fmt(gas.runningWatts)} running / ${fmt(gas.startingWatts)} starting watts</li>` : '',
     lp ? `<li>Propane: ${fmt(lp.runningWatts)} running / ${fmt(lp.startingWatts)} starting watts</li>` : '',
+    bat
+      ? `<li>Battery AC: ${fmt(bat.runningWatts)} continuous / ${fmt(bat.startingWatts)} surge watts${
+          g.capacityWh ? ` · ${fmt(g.capacityWh)} Wh capacity` : ''
+        }</li>`
+      : '',
     `<li>Fuel: ${g.fuelTypes.join(' + ')}${g.inverter ? ' · Inverter' : ''}</li>`,
     `<li>Voltage: ${g.voltages.join('/')}V · Outlets: ${g.outlets.join(', ')}</li>`,
     g.runtimeHours ? `<li>Runtime: about ${g.runtimeHours} h at ${g.runtimeLoadPercent ?? 50}% load (manufacturer figure)</li>` : '',
@@ -294,12 +326,14 @@ function generatorBody(g) {
     .filter(Boolean)
     .join('')
 
+  const fitHeading = bat ? 'Fits on battery AC' : 'Fits on gasoline'
+
   return `
 <h1>${esc(g.brand)} ${esc(g.model)}: what it can run during an outage</h1>
 <p class="muted">Sizing uses the same rule as the selector: sum running watts, add the single largest startup surge, then apply 20% headroom.</p>
 <div class="card"><h2>Specifications</h2><ul>${specs}</ul><p>Where to buy: ${linksHtml(g)}</p></div>
 <h2>Household bundles this unit covers</h2>
-<table><thead><tr><th>Bundle</th><th>Required running / starting</th><th>Fits on gasoline</th></tr></thead><tbody>${rows}</tbody></table>
+<table><thead><tr><th>Bundle</th><th>Required running / starting</th><th>${fitHeading}</th></tr></thead><tbody>${rows}</tbody></table>
 <p class="cta"><a class="btn" href="/">Size your own outage load</a></p>
 `
 }
@@ -307,12 +341,18 @@ function generatorBody(g) {
 // ---------- scenario pages ----------
 function scenarioBody(s) {
   const sizing = sizeBundle(s.selections)
+  const fuelColumn = s.requireBattery ? 'Battery AC running / surge' : 'Gasoline running / starting'
   const candidates = generators
-    .filter((g) => fits(g, sizing, 'gasoline'))
+    .filter((g) =>
+      s.requireBattery
+        ? fits(g, sizing, 'battery')
+        : fits(g, sizing, 'gasoline'),
+    )
     .filter((g) => !s.requireVoltage || g.voltages.includes(s.requireVoltage))
     .filter((g) => !s.requireOutlet || g.outlets.includes(s.requireOutlet))
     .filter((g) => !s.requireInverter || g.inverter)
     .filter((g) => !s.requireDualFuel || (g.gasoline && g.propane))
+    .filter((g) => !s.requireBattery || Boolean(g.battery))
     .filter((g) => !s.maxPrice || g.approximatePriceUsd < s.maxPrice)
     .sort((a, b) => a.approximatePriceUsd - b.approximatePriceUsd)
 
@@ -326,8 +366,8 @@ function scenarioBody(s) {
   const rows = candidates.length
     ? candidates
         .map((g) => {
-          const gas = g.gasoline
-          return `<tr><td><a href="/guides/${g.id}/">${esc(g.brand)} ${esc(g.model)}</a></td><td>${fmt(gas.runningWatts)} / ${fmt(gas.startingWatts)} W</td><td>${g.fuelTypes.join(' + ')}${g.inverter ? ', inverter' : ''}</td><td>${g.outlets.join(', ')}</td><td>${usd(g.approximatePriceUsd)}</td><td>${linksHtml(g)}</td></tr>`
+          const mode = s.requireBattery ? g.battery : g.gasoline
+          return `<tr><td><a href="/guides/${g.id}/">${esc(g.brand)} ${esc(g.model)}</a></td><td>${fmt(mode.runningWatts)} / ${fmt(mode.startingWatts)} W</td><td>${g.fuelTypes.join(' + ')}${g.inverter ? ', inverter' : ''}</td><td>${g.outlets.join(', ')}</td><td>${usd(g.approximatePriceUsd)}</td><td>${linksHtml(g)}</td></tr>`
         })
         .join('')
     : `<tr><td colspan="6">No unit in the current catalog meets this bundle's requirements.</td></tr>`
@@ -338,7 +378,7 @@ function scenarioBody(s) {
 <div class="card"><h2>The bundle</h2><ul>${bundle}</ul>
 <p>Required after 20% headroom: <strong>${fmt(sizing.running)} W running</strong> and <strong>${fmt(sizing.starting)} W starting</strong>${sizing.governing ? ` (startup governed by the ${esc(sizing.governing.name.toLowerCase())})` : ''}.${s.requireVoltage ? ` Requires ${s.requireVoltage}V output.` : ''}${s.requireOutlet ? ` Requires a ${s.requireOutlet} outlet.` : ''}</p></div>
 <h2>Catalog units that qualify, cheapest first</h2>
-<table><thead><tr><th>Model</th><th>Gasoline running / starting</th><th>Fuel</th><th>Outlets</th><th>Approx. price</th><th>Where to buy</th></tr></thead><tbody>${rows}</tbody></table>
+<table><thead><tr><th>Model</th><th>${fuelColumn}</th><th>Fuel</th><th>Outlets</th><th>Approx. price</th><th>Where to buy</th></tr></thead><tbody>${rows}</tbody></table>
 <p class="cta"><a class="btn" href="/">Not your exact appliances? Size your own load</a></p>
 `
 }
@@ -389,9 +429,16 @@ for (const s of SCENARIOS) {
 }
 
 for (const g of generators) {
+  const primary = primaryMode(g)
+  const modeLabel =
+    primary?.fuel === 'battery'
+      ? 'battery AC'
+      : primary?.fuel === 'propane'
+        ? 'propane'
+        : 'gasoline'
   await write(`guides/${g.id}`, page({
     title: `${g.brand} ${g.model}: what it can run`,
-    description: `${g.brand} ${g.model} specifications (${fmt(g.gasoline?.runningWatts ?? 0)} running / ${fmt(g.gasoline?.startingWatts ?? 0)} starting watts on gasoline) and the household outage bundles it covers.`,
+    description: `${g.brand} ${g.model} specifications (${fmt(primary?.mode?.runningWatts ?? 0)} running / ${fmt(primary?.mode?.startingWatts ?? 0)} starting watts on ${modeLabel}) and the household outage bundles it covers.`,
     canonicalPath: `/guides/${g.id}/`,
     body: generatorBody(g),
   }))

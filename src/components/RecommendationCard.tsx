@@ -21,10 +21,23 @@ function fuelModeWatts(item: MergedRecommendation): {
   const mode =
     item.applicableFuel === 'propane'
       ? item.generator.propane
-      : item.generator.gasoline
+      : item.applicableFuel === 'battery'
+        ? item.generator.battery
+        : item.generator.gasoline
   return {
     running: mode?.runningWatts ?? 0,
     starting: mode?.startingWatts ?? 0,
+  }
+}
+
+function fuelModeLabel(fuel: MergedRecommendation['applicableFuel']): string {
+  switch (fuel) {
+    case 'propane':
+      return 'Propane'
+    case 'battery':
+      return 'Battery AC'
+    default:
+      return 'Gasoline'
   }
 }
 
@@ -67,16 +80,28 @@ export function RecommendationCard({
       </p>
       <ul className="rec-card__specs">
         <li>
-          {item.applicableFuel === 'propane' ? 'Propane' : 'Gasoline'}:{' '}
+          {fuelModeLabel(item.applicableFuel)}:{' '}
           {watts.running.toLocaleString('en-US')} running /{' '}
           {watts.starting.toLocaleString('en-US')} starting watts
         </li>
+        {generator.capacityWh !== undefined ? (
+          <li>
+            {generator.capacityWh.toLocaleString('en-US')} Wh usable capacity
+            (manufacturer)
+          </li>
+        ) : null}
         <li>
           +{item.runningHeadroomWatts.toLocaleString('en-US')} W running
           headroom · +{item.startingHeadroomWatts.toLocaleString('en-US')} W
           startup headroom
         </li>
-        {generator.inverter ? <li>Inverter (cleaner power)</li> : null}
+        {generator.inverter ? (
+          <li>
+            {item.applicableFuel === 'battery'
+              ? 'Pure sine inverter (electronics-safe)'
+              : 'Inverter (cleaner power)'}
+          </li>
+        ) : null}
         {connectionBits.length > 0 ? (
           <li>{connectionBits.join(' · ')}</li>
         ) : null}

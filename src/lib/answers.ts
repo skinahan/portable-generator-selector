@@ -18,7 +18,11 @@ export const FUEL_OPTIONS: Array<{
 }> = [
   { id: 'gasoline-ok', label: 'Gasoline is fine' },
   { id: 'dual-fuel-required', label: 'Gasoline + propane required' },
-  { id: 'no-preference', label: 'No preference' },
+  {
+    id: 'battery-indoor-safe',
+    label: 'Indoor-safe battery power station (no carbon monoxide)',
+  },
+  { id: 'no-preference', label: 'No preference (gasoline / propane)' },
 ]
 
 export const CONNECTION_OPTIONS: Array<{

@@ -14,6 +14,12 @@ export function SafetyNotice() {
         wiring. Home-wiring connections require appropriate transfer equipment.
         Follow the generator manufacturer&apos;s instructions.
       </p>
+      <p>
+        For an indoor-safe alternative without carbon monoxide exhaust, choose
+        the battery power-station option in the fuel step. Battery stations
+        still have charge, ventilation, and load limits—follow each
+        manufacturer&apos;s instructions.
+      </p>
       <p className="safety__link">
         <a href={CPSC_URL} target="_blank" rel="noopener noreferrer">
           Generator safety guidance — U.S. CPSC

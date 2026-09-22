@@ -21,6 +21,8 @@ Everything runs in the browser: React + TypeScript + Vite. No backend, auth, or 
 
 Portable generators produce carbon monoxide. Operate them outdoors only, well away from openings, and never backfeed a home through a household receptacle. Transfer equipment is required for home wiring. See the in-app notice and [U.S. CPSC guidance](https://www.cpsc.gov/Newsroom/News-Releases/2026/CPSC-Warns-of-Generator-Carbon-Monoxide-and-Fire-Hazards-Ahead-of-Hurricane-Season).
 
+The fuel step also offers an **indoor-safe battery power-station** preference (no generator exhaust). Battery units still have charge, ventilation, and load limits—follow each manufacturer's instructions.
+
 Recommendations use published specs and estimated loads — verify appliance starting requirements and manufacturer data before purchase.
 
 ## Catalog
@@ -28,7 +30,7 @@ Recommendations use published specs and estimated loads — verify appliance sta
 | Asset | Count | Notes |
 | --- | --- | --- |
 | Loads | 10 | Fridge, freezer, lights, router, TV, furnace blower, sump/well pumps, window AC, microwave |
-| Generators | 12 | Champion, Westinghouse, Honda — manufacturer-sourced watts/outlets |
+| Generators | 15 | Champion, Westinghouse, Honda plus Jackery / EcoFlow / BLUETTI battery power stations — manufacturer-sourced watts/outlets |
 
 Provenance and audit dates:
 

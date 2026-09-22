@@ -1,4 +1,4 @@
-export type FuelType = 'gasoline' | 'propane'
+export type FuelType = 'gasoline' | 'propane' | 'battery'
 
 export type FuelModeRatings = {
   runningWatts: number
@@ -12,6 +12,10 @@ export interface Generator {
   fuelTypes: FuelType[]
   gasoline?: FuelModeRatings
   propane?: FuelModeRatings
+  /** Continuous AC / surge ratings for indoor-safe battery power stations. */
+  battery?: FuelModeRatings
+  /** Usable energy capacity in Wh when published by the manufacturer. */
+  capacityWh?: number
   inverter: boolean
   voltages: number[]
   outlets: string[]
@@ -56,6 +60,7 @@ export type PriorityId =
 export type FuelPreferenceId =
   | 'gasoline-ok'
   | 'dual-fuel-required'
+  | 'battery-indoor-safe'
   | 'no-preference'
 
 export type ConnectionId =
