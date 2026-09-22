@@ -48,7 +48,10 @@ export function affiliateEnabled(config: AffiliateConfig): boolean {
 }
 
 export function searchQuery(generator: Generator): string {
-  return `${generator.brand} ${generator.model} portable generator`
+  const kind = generator.fuelTypes.includes('battery')
+    ? 'portable power station'
+    : 'portable generator'
+  return `${generator.brand} ${generator.model} ${kind}`
 }
 
 export function amazonUrl(

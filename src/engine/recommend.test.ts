@@ -348,6 +348,64 @@ describe('recommendGenerators', () => {
     expect(bestValue?.generator.approximatePriceUsd).toBe(799)
   })
 
+  it('Case J — battery-indoor-safe returns only battery power stations', () => {
+    const fixture = [
+      gen({
+        id: 'gas-only',
+        model: 'Gas Only',
+        approximatePriceUsd: 500,
+        gasoline: { runningWatts: 5000, startingWatts: 6250 },
+      }),
+      gen({
+        id: 'battery-ok',
+        model: 'Battery OK',
+        fuelTypes: ['battery'],
+        battery: { runningWatts: 2000, startingWatts: 4000 },
+        capacityWh: 1265,
+        inverter: true,
+        approximatePriceUsd: 619,
+        gasoline: undefined,
+      }),
+    ]
+    const result = recommendGenerators(
+      baseSizing({
+        recommendedRunningWatts: 1104,
+        recommendedStartingWatts: 2904,
+      }),
+      prefs({ fuelPreference: 'battery-indoor-safe' }),
+      fixture,
+    )
+    const ids = [...new Set(result.recommendations.map((r) => r.generator.id))]
+    expect(ids).toEqual(['battery-ok'])
+    expect(result.recommendations.every((r) => r.applicableFuel === 'battery')).toBe(
+      true,
+    )
+    expect(result.recommendations[0]?.reasons.join(' ')).toMatch(/Indoor-safe battery/i)
+  })
+
+  it('Case K — gasoline-ok excludes battery units', () => {
+    const fixture = [
+      gen({
+        id: 'gas-ok',
+        model: 'Gas OK',
+        approximatePriceUsd: 700,
+        gasoline: { runningWatts: 5000, startingWatts: 6250 },
+      }),
+      gen({
+        id: 'battery-hidden',
+        model: 'Battery Hidden',
+        fuelTypes: ['battery'],
+        battery: { runningWatts: 5000, startingWatts: 6250 },
+        approximatePriceUsd: 400,
+        gasoline: undefined,
+      }),
+    ]
+    const result = recommendGenerators(baseSizing(), prefs(), fixture)
+    const ids = [...new Set(result.recommendations.map((r) => r.generator.id))]
+    expect(ids).toEqual(['gas-ok'])
+    expect(ids).not.toContain('battery-hidden')
+  })
+
   it('Best Value may equal Best Fit when the closest unit is also cheapest', () => {
     const fixture = [
       gen({

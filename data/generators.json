@@ -207,5 +207,53 @@
     "manufacturerUrl": "https://cdn.westinghouseoutdoorpower.com/owners_manuals/Westinghouse_iGen4500DFc_manual_web.pdf",
     "purchaseUrl": "https://www.westinghouseoutdoorpower.com/",
     "auditedAt": "2026-08-12"
+  },
+  {
+    "id": "jackery-explorer-1000-plus",
+    "brand": "Jackery",
+    "model": "Explorer 1000 Plus",
+    "fuelTypes": ["battery"],
+    "battery": { "runningWatts": 2000, "startingWatts": 4000 },
+    "capacityWh": 1265,
+    "inverter": true,
+    "voltages": [120],
+    "outlets": ["5-20R"],
+    "weightLb": 32,
+    "approximatePriceUsd": 619,
+    "manufacturerUrl": "https://www.jackery.com/products/jackery-explorer-1000-plus-portable-power-station",
+    "purchaseUrl": "https://www.jackery.com/products/jackery-explorer-1000-plus-portable-power-station",
+    "auditedAt": "2026-09-22"
+  },
+  {
+    "id": "ecoflow-delta-2-max",
+    "brand": "EcoFlow",
+    "model": "DELTA 2 Max",
+    "fuelTypes": ["battery"],
+    "battery": { "runningWatts": 2400, "startingWatts": 4800 },
+    "capacityWh": 2048,
+    "inverter": true,
+    "voltages": [120],
+    "outlets": ["5-20R"],
+    "weightLb": 50,
+    "approximatePriceUsd": 1099,
+    "manufacturerUrl": "https://www.ecoflow.com/us/delta-2-max-portable-power-station",
+    "purchaseUrl": "https://us.ecoflow.com/products/delta-2-max-portable-power-station",
+    "auditedAt": "2026-09-22"
+  },
+  {
+    "id": "bluetti-ac200l",
+    "brand": "BLUETTI",
+    "model": "AC200L",
+    "fuelTypes": ["battery"],
+    "battery": { "runningWatts": 2400, "startingWatts": 3600 },
+    "capacityWh": 2048,
+    "inverter": true,
+    "voltages": [120],
+    "outlets": ["5-20R", "TT-30R"],
+    "weightLb": 62.4,
+    "approximatePriceUsd": 899,
+    "manufacturerUrl": "https://www.bluettipower.com/products/ac200l",
+    "purchaseUrl": "https://www.bluettipower.com/products/ac200l",
+    "auditedAt": "2026-09-22"
   }
 ]

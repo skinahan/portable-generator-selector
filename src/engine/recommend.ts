@@ -13,6 +13,7 @@ import type { SizingResult } from './sizing'
 const FUEL_PREFERENCES: FuelPreferenceId[] = [
   'gasoline-ok',
   'dual-fuel-required',
+  'battery-indoor-safe',
   'no-preference',
 ]
 
@@ -72,6 +73,17 @@ function resolveApplicableFuel(
   const hasGas = generator.fuelTypes.includes('gasoline') && generator.gasoline
   const hasPropane =
     generator.fuelTypes.includes('propane') && generator.propane
+  const hasBattery =
+    generator.fuelTypes.includes('battery') && generator.battery
+
+  if (fuelPreference === 'battery-indoor-safe') {
+    if (!hasBattery || !generator.battery) return null
+    return {
+      fuel: 'battery',
+      runningWatts: generator.battery.runningWatts,
+      startingWatts: generator.battery.startingWatts,
+    }
+  }
 
   if (fuelPreference === 'dual-fuel-required') {
     if (!hasGas || !hasPropane || !generator.propane) return null
@@ -91,7 +103,8 @@ function resolveApplicableFuel(
     }
   }
 
-  // no-preference: dual-fuel uses the weaker mode; gas-only uses gasoline
+  // no-preference: dual-fuel uses the weaker mode; gas-only uses gasoline.
+  // Battery units stay on the explicit indoor-safe preference.
   if (hasGas && hasPropane && generator.gasoline && generator.propane) {
     const gasRank =
       generator.gasoline.runningWatts * 1_000_000 +
@@ -270,7 +283,16 @@ function buildReasons(
     `+ ${candidate.startingWatts - sizing.recommendedStartingWatts} W startup headroom`,
   ]
 
-  if (g.fuelTypes.includes('gasoline') && g.fuelTypes.includes('propane')) {
+  if (candidate.applicableFuel === 'battery') {
+    reasons.push(
+      '+ Indoor-safe battery power station (no generator carbon monoxide)',
+    )
+    if (g.capacityWh !== undefined) {
+      reasons.push(
+        `+ ${g.capacityWh.toLocaleString('en-US')} Wh published capacity`,
+      )
+    }
+  } else if (g.fuelTypes.includes('gasoline') && g.fuelTypes.includes('propane')) {
     reasons.push('+ Supports gasoline and propane')
   } else if (candidate.applicableFuel === 'gasoline') {
     reasons.push('+ Evaluated on gasoline output')
